@@ -22,7 +22,14 @@ public class Fen {
 	private LinkedBlockingQueue<MethodElement> methodElementQueue;
 	private boolean insertFlag = true;
 
-	public Fen() throws FenException {
+	/**
+	 * 
+	 * 必须先使用first()方法将第一个方法指针放入队首，且仅能使用一次。
+	 * 之后使用and()方法将其余方法指针依次放入队列。
+	 * start()方法开始后，就会依次从队首开始运行方法并自动把结果作为下一个方法的参数，直到运行结束。
+	 * 
+	 */
+	public Fen() {
 		methodElementQueue = new LinkedBlockingQueue<MethodElement>();
 	}
 
@@ -34,6 +41,10 @@ public class Fen {
 		if (mp == null) {
 			throw new FenException("MethodHost is Null!");
 		}
+		
+		if(methodElementQueue.isEmpty()) {
+			throw new FenException("Must run first()!");
+		}
 
 		if (insertFlag) {
 			paraseToQueue(mode, mp);
@@ -41,25 +52,40 @@ public class Fen {
 		return this;
 	}
 
+	/**
+	 * 将方法放入队首
+	 * @param mp
+	 * @param params
+	 * @return
+	 * @throws FenException
+	 */
 	public Fen first(MethodPoint mp, Object... params) throws FenException {
 		return first(ThreadMode.None, mp, params);
 	}
 
+	/**
+	 * 将方法放入队首
+	 * @param mode
+	 * @param mp
+	 * @param params
+	 * @return
+	 * @throws FenException
+	 */
 	public Fen first(ThreadMode mode, MethodPoint mp, Object... params)
 			throws FenException {
+		if(!methodElementQueue.isEmpty()) {
+			throw new FenException("Can't be done twice!");
+		}
+		
 		if (insertFlag) {
 			paraseToQueue(mode, mp, params);
 		}
 		return this;
 	}
 
-	public Fen first(Object... params) {
-		if (params != null && !methodElementQueue.isEmpty() && insertFlag) {
-			getFirstMethodElement().params = new Object[] { params };
-		}
-		return this;
-	}
-
+	/**
+	 * 开始运行队列中的方法
+	 */
 	public void start() {
 		insertFlag = false;
 		next();
