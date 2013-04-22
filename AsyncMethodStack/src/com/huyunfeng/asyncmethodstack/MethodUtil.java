@@ -46,10 +46,9 @@ public class MethodUtil {
 	/**
 	 * 获取方法注解中的线程模式，默认为Main
 	 * @param method 方法
-	 * @param mode 指定的线程模式
 	 * @return
 	 */
-	public static ThreadMode getThreadModeFromMethod(Method method, ThreadMode mode) {
+	public static ThreadMode getThreadModeFromMethod(Method method) {
 		FThreradMode tMode = method.getAnnotation(FThreradMode.class);
 		if (tMode != null && tMode.mode() != ThreadMode.None) {
 			return tMode.mode();

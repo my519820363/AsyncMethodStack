@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.huyunfeng.asyncmethodstack.Fen;
+import com.huyunfeng.asyncmethodstack.MethodPoint;
 import com.huyunfeng.asyncmethodstack.Fen.FThreradMode;
 import com.huyunfeng.asyncmethodstack.Fen.ThreadMode;
 import com.huyunfeng.asyncmethodstack.FenException;
@@ -38,15 +39,20 @@ public class MainActivity extends Activity {
 
 		view = (ImageView) findViewById(R.id.img);
 		Log.d("demo", "主线程ID：" + Thread.currentThread().getId());
-
+		
 		try {
+//			MethodPoint getBitmap = new MethodPoint(this, "getBitmap", Integer.class, Integer.class);
+//			MethodPoint cutBitmap = new MethodPoint(this, "CutBitmap", Bitmap.class);
+//			MethodPoint setImageBitmap = new MethodPoint(view, "setImageBitmap", Bitmap.class);
+			
+			MethodPoint getBitmap = new MethodPoint(this, "getBitmap");
+			MethodPoint cutBitmap = new MethodPoint(MainActivity.class, "CutBitmap");
+			MethodPoint setImageBitmap = new MethodPoint(view, "setImageBitmap");
+			
 			for (int i = 0; i < 10; i++) {
-				new Fen(this).pop(view, "setImageBitmap").popStatic(this.getClass(), "CutBitmap")
-						.end("getBitmap", R.drawable.ic_launcher, i);
+				new Fen().first(getBitmap, R.drawable.ic_launcher, i).and(cutBitmap)
+						.and(setImageBitmap).start();
 			}
-//			new Fen(this).pop(view, "setImageBitmap").end(
-//					((BitmapDrawable) getResources().getDrawable(R.drawable.ic_launcher))
-//					.getBitmap());
 		} catch (FenException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
